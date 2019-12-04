@@ -36,7 +36,7 @@ SOURCE += stm32l4xx_hal_uart.c stm32l4xx_hal_dma.c stm32l4xx_hal_uart_ex.c
 SOURCE_PATH += $(STM32L4_CUBE_PATH)/Drivers/BSP/STM32L4xx_Nucleo/
 SOURCE += stm32l4xx_nucleo.c
 
-SOURCE_PATH += $(STM32L4_CUBE_PATH)/Projects/NUCLEO-L476RG/Examples/GPIO/GPIO_EXTI/Src/
+SOURCE_PATH += $(STM32L4_CUBE_PATH)/Projects/NUCLEO-L476RG/Examples/GPIO/GPIO_IOToggle/Src/
 SOURCE += stm32l4xx_it.c
 
 # startup code

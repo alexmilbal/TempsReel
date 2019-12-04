@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * @file    GPIO/GPIO_EXTI/Src/main.c
+  * @file    GPIO/GPIO_IOToggle/Src/main.c
   * @author  MCD Application Team
   * @brief   This example describes how to configure and use GPIOs through
   *          the STM32L4xx HAL API.
@@ -25,7 +25,7 @@
   * @{
   */
 
-/** @addtogroup GPIO_EXTI
+/** @addtogroup GPIO_IOToggle
   * @{
   */
 
@@ -33,9 +33,11 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
+static GPIO_InitTypeDef  GPIO_InitStruct;
+
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-static void EXTI15_10_IRQHandler_Config(void);
+
 /* Private functions ---------------------------------------------------------*/
 
 /**
@@ -45,6 +47,9 @@ static void EXTI15_10_IRQHandler_Config(void);
   */
 int main(void)
 {
+  /* This sample code shows how to use GPIO HAL API to toggle LED2 IOs
+    in an infinite loop. */
+
   /* STM32L4xx HAL library initialization:
        - Configure the Flash prefetch
        - Systick timer is configured by default as source of time base, but user 
@@ -59,16 +64,24 @@ int main(void)
 
   /* Configure the system clock to 80 MHz */
   SystemClock_Config();
+  
+  /* -1- Enable each GPIO Clock (to be able to program the configuration registers) */
+  LED2_GPIO_CLK_ENABLE();
 
-  /* -1- Initialize LEDs mounted on STM32L476RG-Nucleo Rev C board */
-  BSP_LED_Init(LED2);
+  /* -2- Configure IOs in output push-pull mode to drive external LEDs */
+  GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull  = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
 
-  /* -2- Configure External line 13 (connected to PC.13 pin) in interrupt mode */
-  EXTI15_10_IRQHandler_Config();
+  GPIO_InitStruct.Pin = LED2_PIN;
+  HAL_GPIO_Init(LED2_GPIO_PORT, &GPIO_InitStruct);
 
-  /* Infinite loop */
+  /* -3- Toggle IOs in an infinite loop */
   while (1)
   {
+    HAL_GPIO_TogglePin(LED2_GPIO_PORT, LED2_PIN);
+    /* Insert delay 100 ms */
+    HAL_Delay(100);
   }
 }
 
@@ -128,42 +141,6 @@ void SystemClock_Config(void)
   }
 }
 
-/**
-  * @brief  Configures EXTI lines 10 to 15 (connected to PC.13 pin) in interrupt mode
-  * @param  None
-  * @retval None
-  */
-static void EXTI15_10_IRQHandler_Config(void)
-{
-  GPIO_InitTypeDef   GPIO_InitStructure;
-
-  /* Enable GPIOC clock */
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-
-  /* Configure PC.13 pin as input floating */
-  GPIO_InitStructure.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStructure.Pull = GPIO_NOPULL;
-  GPIO_InitStructure.Pin = GPIO_PIN_13;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-  /* Enable and set EXTI lines 10 to 15 Interrupt to the lowest priority */
-  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 2, 0);
-  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
-}
-
-/**
-  * @brief EXTI line detection callbacks
-  * @param GPIO_Pin: Specifies the pins connected EXTI line
-  * @retval None
-  */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-  if (GPIO_Pin == GPIO_PIN_13)
-  {
-    /* Toggle LED2 */
-    BSP_LED_Toggle(LED2);
-  }
-}
 
 #ifdef  USE_FULL_ASSERT
 
