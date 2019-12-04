@@ -2,9 +2,9 @@
 *****************************************************************************
 **
 
-**  File        : stm32_flash.ld
+**  File        : LinkerScript.ld
 **
-**  Abstract    : Linker script for STM32L476ZG Device with
+**  Abstract    : Linker script for STM32L476RGTx Device with
 **                1024KByte FLASH, 96KByte RAM
 **
 **                Set heap size, stack size and stack location according
@@ -14,16 +14,17 @@
 **
 **  Target      : STMicroelectronics STM32
 **
-**  Environment : Atollic TrueSTUDIO(R)
 **
 **  Distribution: The file is distributed as is, without any warranty
 **                of any kind.
 **
-**  (c)Copyright Atollic AB.
+**  (c)Copyright Ac6.
 **  You may use this file as-is or modify it according to the needs of your
-**  project. This file may only be built (assembled or compiled and linked)
-**  using the Atollic TrueSTUDIO(R) product. The use of this file together
-**  with other tools than Atollic TrueSTUDIO(R) is not permitted.
+**  project. Distribution of this file (unmodified or modified) is not
+**  permitted. Ac6 permit registered System Workbench for MCU users the
+**  rights to distribute the assembled, compiled & linked contents of this
+**  file as part of an application binary file, provided that it is built
+**  using the System Workbench for MCU toolchain.
 **
 *****************************************************************************
 */
@@ -32,7 +33,7 @@
 ENTRY(Reset_Handler)
 
 /* Highest address of the user mode stack */
-_estack = 0x20017FFF;    /* end of RAM */
+_estack = 0x20018000;    /* end of RAM */
 /* Generate a link error if heap and stack don't fit into RAM */
 _Min_Heap_Size = 0x200;;      /* required amount of heap  */
 _Min_Stack_Size = 0x400;; /* required amount of stack */
@@ -58,7 +59,7 @@ SECTIONS
   /* The program code and other data goes into FLASH */
   .text :
   {
-    . = ALIGN(4);
+    . = ALIGN(8);
     *(.text)           /* .text sections (code) */
     *(.text*)          /* .text* sections (code) */
     *(.glue_7)         /* glue arm to thumb code */
@@ -68,17 +69,17 @@ SECTIONS
     KEEP (*(.init))
     KEEP (*(.fini))
 
-    . = ALIGN(4);
+    . = ALIGN(8);
     _etext = .;        /* define a global symbols at end of code */
   } >FLASH
 
   /* Constant data goes into FLASH */
   .rodata :
   {
-    . = ALIGN(4);
+    . = ALIGN(8);
     *(.rodata)         /* .rodata sections (constants, strings, etc.) */
     *(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
-    . = ALIGN(4);
+    . = ALIGN(8);
   } >FLASH
 
   .ARM.extab   : 
@@ -129,12 +130,12 @@ SECTIONS
   /* Initialized data sections goes into RAM, load LMA copy after code */
   .data : 
   {
-    . = ALIGN(4);
+    . = ALIGN(8);
     _sdata = .;        /* create a global symbol at data start */
     *(.data)           /* .data sections */
     *(.data*)          /* .data* sections */
 
-    . = ALIGN(4);
+    . = ALIGN(8);
     _edata = .;        /* define a global symbol at data end */
   } >RAM AT> FLASH
 
@@ -178,5 +179,3 @@ SECTIONS
 
   .ARM.attributes 0 : { *(.ARM.attributes) }
 }
-
-

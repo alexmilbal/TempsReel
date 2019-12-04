@@ -42,7 +42,7 @@
 /* #define HAL_CRYP_MODULE_ENABLED */
 /* #define HAL_DAC_MODULE_ENABLED */
 /* #define HAL_DFSDM_MODULE_ENABLED */
-#define HAL_DMA_MODULE_ENABLED
+/* #define HAL_DMA_MODULE_ENABLED */
 /* #define HAL_FIREWALL_MODULE_ENABLED */
 #define HAL_FLASH_MODULE_ENABLED
 /* #define HAL_HCD_MODULE_ENABLED */
@@ -50,7 +50,7 @@
 /* #define HAL_NOR_MODULE_ENABLED */
 /* #define HAL_SRAM_MODULE_ENABLED */
 #define HAL_GPIO_MODULE_ENABLED
-#define HAL_I2C_MODULE_ENABLED
+/* #define HAL_I2C_MODULE_ENABLED */
 /* #define HAL_IRDA_MODULE_ENABLED */
 /* #define HAL_IWDG_MODULE_ENABLED */
 /* #define HAL_LCD_MODULE_ENABLED */
@@ -70,7 +70,7 @@
 /* #define HAL_SWPMI_MODULE_ENABLED */
 /* #define HAL_TIM_MODULE_ENABLED */
 /* #define HAL_TSC_MODULE_ENABLED */
-#define HAL_UART_MODULE_ENABLED
+/* #define HAL_UART_MODULE_ENABLED */
 /* #define HAL_USART_MODULE_ENABLED */
 /* #define HAL_WWDG_MODULE_ENABLED */
 
@@ -107,25 +107,13 @@
 #endif /* HSI_VALUE */
 
 /**
-  * @brief Internal High Speed oscillator (HSI48) value for USB FS, SDMMC and RNG.
-  *        This internal oscillator is mainly dedicated to provide a high precision clock to
-  *        the USB peripheral by means of a special Clock Recovery System (CRS) circuitry.
-  *        When the CRS is not used, the HSI48 RC oscillator runs on it default frequency
-  *        which is subject to manufacturing process variations.
-  */
-#if !defined  (HSI48_VALUE) 
-  #define HSI48_VALUE   48000000U             /*!< Value of the Internal High Speed oscillator for USB FS/SDMMC/RNG in Hz.
-                                               The real value my vary depending on manufacturing process variations.*/
-#endif /* HSI48_VALUE */
-
-/**
   * @brief Internal Low Speed oscillator (LSI) value.
   */
 #if !defined  (LSI_VALUE) 
-  #define LSI_VALUE  32000U                 /*!< LSI Typical Value in Hz*/
+ #define LSI_VALUE  32000U                 /*!< LSI Typical Value in Hz*/
 #endif /* LSI_VALUE */                     /*!< Value of the Internal Low Speed oscillator in Hz
-                                              The real value may vary depending on the variations
-                                              in voltage and temperature.*/
+                                             The real value may vary depending on the variations
+                                             in voltage and temperature.*/
 /**
   * @brief External Low Speed oscillator (LSE) value.
   *        This value is used by the UART, RTC HAL module to compute the system frequency
@@ -135,7 +123,7 @@
 #endif /* LSE_VALUE */
 
 #if !defined  (LSE_STARTUP_TIMEOUT)
-  #define LSE_STARTUP_TIMEOUT    5000U  /*!< Time out for LSE start up, in ms */
+  #define LSE_STARTUP_TIMEOUT    5000U   /*!< Time out for LSE start up, in ms */
 #endif /* HSE_STARTUP_TIMEOUT */
 
 /**
@@ -260,95 +248,95 @@
 #endif /* HAL_NAND_MODULE_ENABLED */
 
 #ifdef HAL_I2C_MODULE_ENABLED
-  #include "stm32l4xx_hal_i2c.h"
+ #include "stm32l4xx_hal_i2c.h"
 #endif /* HAL_I2C_MODULE_ENABLED */
 
 #ifdef HAL_IWDG_MODULE_ENABLED
-  #include "stm32l4xx_hal_iwdg.h"
+ #include "stm32l4xx_hal_iwdg.h"
 #endif /* HAL_IWDG_MODULE_ENABLED */
 
 #ifdef HAL_LCD_MODULE_ENABLED
-  #include "stm32l4xx_hal_lcd.h"
+ #include "stm32l4xx_hal_lcd.h"
 #endif /* HAL_LCD_MODULE_ENABLED */
 
 #ifdef HAL_LPTIM_MODULE_ENABLED
-  #include "stm32l4xx_hal_lptim.h"
+#include "stm32l4xx_hal_lptim.h"
 #endif /* HAL_LPTIM_MODULE_ENABLED */
 
 #ifdef HAL_OPAMP_MODULE_ENABLED
-  #include "stm32l4xx_hal_opamp.h"
+#include "stm32l4xx_hal_opamp.h"
 #endif /* HAL_OPAMP_MODULE_ENABLED */
 
 #ifdef HAL_PWR_MODULE_ENABLED
-  #include "stm32l4xx_hal_pwr.h"
+ #include "stm32l4xx_hal_pwr.h"
 #endif /* HAL_PWR_MODULE_ENABLED */
 
 #ifdef HAL_QSPI_MODULE_ENABLED
-  #include "stm32l4xx_hal_qspi.h"
+ #include "stm32l4xx_hal_qspi.h"
 #endif /* HAL_QSPI_MODULE_ENABLED */
 
 #ifdef HAL_RNG_MODULE_ENABLED
-  #include "stm32l4xx_hal_rng.h"
+ #include "stm32l4xx_hal_rng.h"
 #endif /* HAL_RNG_MODULE_ENABLED */
 
 #ifdef HAL_RTC_MODULE_ENABLED
-  #include "stm32l4xx_hal_rtc.h"
+ #include "stm32l4xx_hal_rtc.h"
 #endif /* HAL_RTC_MODULE_ENABLED */
 
 #ifdef HAL_SAI_MODULE_ENABLED
-  #include "stm32l4xx_hal_sai.h"
+ #include "stm32l4xx_hal_sai.h"
 #endif /* HAL_SAI_MODULE_ENABLED */
 
 #ifdef HAL_SD_MODULE_ENABLED
-  #include "stm32l4xx_hal_sd.h"
+ #include "stm32l4xx_hal_sd.h"
 #endif /* HAL_SD_MODULE_ENABLED */
 
 #ifdef HAL_SMBUS_MODULE_ENABLED
-  #include "stm32l4xx_hal_smbus.h"
+ #include "stm32l4xx_hal_smbus.h"
 #endif /* HAL_SMBUS_MODULE_ENABLED */
 
 #ifdef HAL_SPI_MODULE_ENABLED
-  #include "stm32l4xx_hal_spi.h"
+ #include "stm32l4xx_hal_spi.h"
 #endif /* HAL_SPI_MODULE_ENABLED */
 
 #ifdef HAL_SWPMI_MODULE_ENABLED
-  #include "stm32l4xx_hal_swpmi.h"
+ #include "stm32l4xx_hal_swpmi.h"
 #endif /* HAL_SWPMI_MODULE_ENABLED */
 
 #ifdef HAL_TIM_MODULE_ENABLED
-  #include "stm32l4xx_hal_tim.h"
+ #include "stm32l4xx_hal_tim.h"
 #endif /* HAL_TIM_MODULE_ENABLED */
 
 #ifdef HAL_TSC_MODULE_ENABLED
-  #include "stm32l4xx_hal_tsc.h"
+ #include "stm32l4xx_hal_tsc.h"
 #endif /* HAL_TSC_MODULE_ENABLED */
 
 #ifdef HAL_UART_MODULE_ENABLED
-  #include "stm32l4xx_hal_uart.h"
+ #include "stm32l4xx_hal_uart.h"
 #endif /* HAL_UART_MODULE_ENABLED */
 
 #ifdef HAL_USART_MODULE_ENABLED
-  #include "stm32l4xx_hal_usart.h"
+ #include "stm32l4xx_hal_usart.h"
 #endif /* HAL_USART_MODULE_ENABLED */
 
 #ifdef HAL_IRDA_MODULE_ENABLED
-  #include "stm32l4xx_hal_irda.h"
+ #include "stm32l4xx_hal_irda.h"
 #endif /* HAL_IRDA_MODULE_ENABLED */
 
 #ifdef HAL_SMARTCARD_MODULE_ENABLED
-  #include "stm32l4xx_hal_smartcard.h"
+ #include "stm32l4xx_hal_smartcard.h"
 #endif /* HAL_SMARTCARD_MODULE_ENABLED */
 
 #ifdef HAL_WWDG_MODULE_ENABLED
-  #include "stm32l4xx_hal_wwdg.h"
+ #include "stm32l4xx_hal_wwdg.h"
 #endif /* HAL_WWDG_MODULE_ENABLED */
 
 #ifdef HAL_PCD_MODULE_ENABLED
-  #include "stm32l4xx_hal_pcd.h"
+ #include "stm32l4xx_hal_pcd.h"
 #endif /* HAL_PCD_MODULE_ENABLED */
 
 #ifdef HAL_HCD_MODULE_ENABLED
-  #include "stm32l4xx_hal_hcd.h"
+ #include "stm32l4xx_hal_hcd.h"
 #endif /* HAL_HCD_MODULE_ENABLED */
 
 /* Exported macro ------------------------------------------------------------*/

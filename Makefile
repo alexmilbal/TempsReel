@@ -1,29 +1,43 @@
 # Base makefile for project.
 
 # firmware name
-NAME = STM32CubeL4
+NAME = test
 
 # where to put temporary file during compilation
 BUILD_PATH = ./build
 
 # STM32Cube L4 path
-#STM32L4_CUBE_PATH = <tod-path-to-your-stm32-cube-l4-source>
-STM32L4_CUBE_PATH = /home/alexis/Cours/TempsReelSTM32/Cours/IMERIR-2019/en.stm32cubel4/STM32Cube_FW_L4_V1.14.0
-SOURCE = main.c stm32l4xx_it.c stm32l4xx_nucleo.c stm32l4xx_hal_msp.c
+STM32L4_CUBE_PATH = /home/clem/Bureau/IMERIR-2019/STM32Cube_FW_L4_V1.14.0
+
+SOURCE = main.c
+
 
 # path to our source code
-SOURCE_PATH = /home/alexis/Cours/IMERIR-2019/test_project
+SOURCE_PATH = ./
 
 # include path macro: -I<include path>
-INCLUDE = -I./ -I$(STM32L4_CUBE_PATH)/Drivers/BSP/STM32L4xx_Nucleo
+INCLUDE += -I./ -I$(STM32L4_CUBE_PATH)/Drivers/BSP/STM32L4xx_Nucleo
+INCLUDE += -I./ -I$(STM32L4_CUBE_PATH)/Drivers/CMSIS/Device/ST/STM32L4xx/Include
+INCLUDE += -I./ -I$(STM32L4_CUBE_PATH)/Drivers/CMSIS/Core/Include
+INCLUDE += -I./ -I$(STM32L4_CUBE_PATH)/Drivers/STM32L4xx_HAL_Driver/Inc
+
+INCLUDE += -I./ -I$(STM32L4_CUBE_PATH)/Drivers/CMSIS/DSP/Include
+INCLUDE += -I./ -I$(STM32L4_CUBE_PATH)/Drivers/CMSIS/NN/Include
+INCLUDE += -I./ -I$(STM32L4_CUBE_PATH)/Drivers/CMSIS/RTOS2/Include
+
+
 
 # STM32 CUbe L4 HAL source code
 SOURCE_PATH += $(STM32L4_CUBE_PATH)/Drivers/STM32L4xx_HAL_Driver/Src/
 SOURCE += stm32l4xx_hal.c stm32l4xx_hal_cortex.c stm32l4xx_hal_rcc.c stm32l4xx_hal_pwr_ex.c
 SOURCE += stm32l4xx_hal_gpio.c stm32l4xx_hal_pwr.c
-SOURCE += stm32l4xx_hal_uart.c stm32l4xx_hal_dma.c stm32l4xx_hal_uart_ex.c 
-SOURCE += stm32l4xx_hal_wwdg.c
-SOURCE += stm32l4xx_hal_rcc_ex.c stm32l4xx_hal_i2c.c stm32l4xx_hal_i2c_ex.c
+SOURCE += stm32l4xx_hal_uart.c stm32l4xx_hal_dma.c stm32l4xx_hal_uart_ex.c
+
+SOURCE_PATH += $(STM32L4_CUBE_PATH)/Drivers/BSP/STM32L4xx_Nucleo/
+SOURCE += stm32l4xx_nucleo.c
+
+SOURCE_PATH += $(STM32L4_CUBE_PATH)/Projects/NUCLEO-L476RG/Examples/GPIO/GPIO_EXTI/Src/
+SOURCE += stm32l4xx_it.c
 
 # startup code
 STARTUP_FILE = $(STM32L4_CUBE_PATH)/Drivers/CMSIS/Device/ST/STM32L4xx/Source/Templates/gcc/startup_stm32l476xx.s
@@ -33,21 +47,17 @@ SOURCE_PATH += $(STM32L4_CUBE_PATH)/Drivers/CMSIS/Device/ST/STM32L4xx/Source/Tem
 SOURCE += system_stm32l4xx.c
 
 # include path for the system startup code
-INCLUDE += -I$(STM32L4_CUBE_PATH)/Drivers/CMSIS/Device/ST/STM32L4xx/Include
-INCLUDE += -I$(STM32L4_CUBE_PATH)/Drivers/CMSIS/Include
-INCLUDE += -I$(STM32L4_CUBE_PATH)/Drivers/STM32L4xx_HAL_Driver/Inc
+INCLUDE += 
 
 # preprocessor definition -D<preprocessor>
 DEFINE = -DSTM32L476xx -DUSE_HAL_DRIVER -DUSE_STM32L4XX_NUCLEO
 
 
 ## FreeRTOS
-#FREE_RTOS_PATH = /home/alexis/Cours/TempsReelSTM32/FreeRTOSv10.2.1_191129/FreeRTOS/Source
-#SOURCE_PATH += $(FREE_RTOS_PATH) $(FREE_RTOS_PATH)/portable/GCC/ARM_CM4F/
-#SOURCE += croutine.c tasks.c event_groups.c list.c queue.c stream_buffer.c	timers.c port.c
-#INCLUDE += -I$(FREE_RTOS_PATH)/include -I$(FREE_RTOS_PATH)/portable/GCC/ARM_CM4F/
-#SOURCE_PATH += $(FREE_RTOS_PATH)/portable/MemMang
-#SOURCE += heap_4.c
+#FREE_RTOS_PATH = <todo-path-to-your-freertos>
+#SOURCE_PATH += 
+#SOURCE += 
+#INCLUDE += -I$(FREE_RTOS_PATH)/
 
 # linker file
 CUSTOM_LINKER_FILE = stm32l476.ld
@@ -95,7 +105,7 @@ LINKER_OPTION += $(CPU)
 LINKER_OPTION += -Wl,--start-group -lc -lm -Wl,--end-group 
 
 
-TOOLS_PATH=/home/alexis/Cours/TempsReelSTM32/gcc-arm-none-eabi-9-2019-q4-major-x86_64-linux/gcc-arm-none-eabi-9-2019-q4-major/bin/
+TOOLS_PATH=/home/clem/Bureau/GCC_STM32/gcc-arm-none-eabi-9-2019-q4-major/bin/
 
 EXE=$(BUILD_PATH)/$(NAME).hex
 EXE_MAIN=$(BUILD_PATH)/$(NAME).elf

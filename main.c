@@ -1,11 +1,9 @@
 /**
   ******************************************************************************
-  * @file    I2C/I2C_TwoBoards_ComPolling/Src/main.c
+  * @file    GPIO/GPIO_EXTI/Src/main.c
   * @author  MCD Application Team
-  * @brief   This sample code shows how to use STM32L4xx I2C HAL API to transmit
-  *          and receive a data buffer with a communication process based on
-  *          Polling transfer.
-  *          The communication is done using 2 Boards.
+  * @brief   This example describes how to configure and use GPIOs through
+  *          the STM32L4xx HAL API.
   ******************************************************************************
   * @attention
   *
@@ -27,38 +25,17 @@
   * @{
   */
 
-/** @addtogroup I2C_TwoBoards_ComPolling
+/** @addtogroup GPIO_EXTI
   * @{
   */
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-/* Uncomment this line to use the board as master, if not it is used as slave */
-//#define MASTER_BOARD
-#define I2C_ADDRESS        0x30F
-
-/* I2C TIMING Register define when I2C clock source is SYSCLK */
-/* I2C TIMING is calculated in case of the I2C Clock source is the SYSCLK = 80 MHz */
-/* This example use TIMING to 0x00D00E28 to reach 1 MHz speed (Rise time = 120ns, Fall time = 25ns) */
-#define I2C_TIMING      0x00D00E28
-
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-/* I2C handler declaration */
-I2C_HandleTypeDef I2cHandle;
-
-
-/* Buffer used for transmission */
-uint8_t aTxBuffer[] = " ****I2C_TwoBoards communication based on Polling****  ****I2C_TwoBoards communication based on Polling****  ****I2C_TwoBoards communication based on Polling**** ";
-
-/* Buffer used for reception */
-uint8_t aRxBuffer[RXBUFFERSIZE];
-
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-static uint16_t Buffercmp(uint8_t* pBuffer1, uint8_t* pBuffer2, uint16_t BufferLength);
-static void Error_Handler(void);
-
+static void EXTI15_10_IRQHandler_Config(void);
 /* Private functions ---------------------------------------------------------*/
 
 /**
@@ -83,133 +60,12 @@ int main(void)
   /* Configure the system clock to 80 MHz */
   SystemClock_Config();
 
-  /* Configure LED2 */
+  /* -1- Initialize LEDs mounted on STM32L476RG-Nucleo Rev C board */
   BSP_LED_Init(LED2);
 
+  /* -2- Configure External line 13 (connected to PC.13 pin) in interrupt mode */
+  EXTI15_10_IRQHandler_Config();
 
-  /*##-1- Configure the I2C peripheral ######################################*/
-  I2cHandle.Instance             = I2Cx;
-  I2cHandle.Init.Timing          = I2C_TIMING;
-  I2cHandle.Init.OwnAddress1     = I2C_ADDRESS;
-  I2cHandle.Init.AddressingMode  = I2C_ADDRESSINGMODE_10BIT;
-  I2cHandle.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-  I2cHandle.Init.OwnAddress2     = 0xFF;
-  I2cHandle.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-  I2cHandle.Init.NoStretchMode   = I2C_NOSTRETCH_DISABLE;
-  
-  if(HAL_I2C_Init(&I2cHandle) != HAL_OK)
-  {
-    /* Initialization Error */
-    Error_Handler();
-  }
-
-  /* Enable the Analog I2C Filter */
-  HAL_I2CEx_ConfigAnalogFilter(&I2cHandle,I2C_ANALOGFILTER_ENABLE);
-
-#ifdef MASTER_BOARD
-  /* Configure User push-button */
-  BSP_PB_Init(BUTTON_USER,BUTTON_MODE_GPIO);
-
-  /* Wait for User push-button press before starting the Communication */
-  while (BSP_PB_GetState(BUTTON_USER) != GPIO_PIN_RESET)
-  {
-  }
-
-  /* Delay to avoid that possible signal rebound is taken as button release */
-  HAL_Delay(50);
-
-  /* Wait for User push-button release before starting the Communication */
-  while (BSP_PB_GetState(BUTTON_USER) != GPIO_PIN_SET)
-  {
-  }
-
-  /* The board sends the message and expects to receive it back */
-
-  /*##-2- Start the transmission process #####################################*/  
-  /* While the I2C in reception process, user can transmit data through 
-     "aTxBuffer" buffer */
-  /* Timeout is set to 10S */
-  while(HAL_I2C_Master_Transmit(&I2cHandle, (uint16_t)I2C_ADDRESS, (uint8_t*)aTxBuffer, TXBUFFERSIZE, 10000)!= HAL_OK)
-  {
-    /* Error_Handler() function is called when Timeout error occurs.
-       When Acknowledge failure occurs (Slave don't acknowledge its address)
-       Master restarts communication */
-    if (HAL_I2C_GetError(&I2cHandle) != HAL_I2C_ERROR_AF)
-    {
-      Error_Handler();
-    }
-  }
-
-  /* Turn LED2 on: Transfer in Transmission process is correct */
-  BSP_LED_On(LED2);
-
-  /* Wait for User push-button press before starting the Communication */
-  while (BSP_PB_GetState(BUTTON_USER) != GPIO_PIN_RESET)
-  {
-  }
-
-  /* Delay to avoid that possible signal rebound is taken as button release */
-  HAL_Delay(50);
-
-  /* Wait for User push-button release before starting the Communication */
-  while (BSP_PB_GetState(BUTTON_USER) != GPIO_PIN_SET)
-  {
-  }
-
-
-  /*##-3- Put I2C peripheral in reception process ############################*/ 
-  /* Timeout is set to 10S */ 
-  while(HAL_I2C_Master_Receive(&I2cHandle, (uint16_t)I2C_ADDRESS, (uint8_t *)aRxBuffer, RXBUFFERSIZE, 10000) != HAL_OK)
-  {
-    /* Error_Handler() function is called when Timeout error occurs.
-       When Acknowledge failure occurs (Slave don't acknowledge it's address)
-       Master restarts communication */
-    if (HAL_I2C_GetError(&I2cHandle) != HAL_I2C_ERROR_AF)
-    {
-      Error_Handler();
-    }
-  }
-
-  /* Turn LED2 off: Transfer in reception process is correct */
-  BSP_LED_Off(LED2);
-
-#else
-  
-  /* The board receives the message and sends it back */
-
-  /*##-2- Put I2C peripheral in reception process ############################*/ 
-  /* Timeout is set to 10S  */
-  if(HAL_I2C_Slave_Receive(&I2cHandle, (uint8_t *)aRxBuffer, RXBUFFERSIZE, 10000) != HAL_OK)
-  {
-    /* Transfer error in reception process */
-    Error_Handler();
-  }
-
-  /* Turn LED2 on: Transfer in reception process is correct */
-  BSP_LED_On(LED2);
-
-  /*##-3- Start the transmission process #####################################*/  
-  /* While the I2C in reception process, user can transmit data through 
-     "aTxBuffer" buffer */
-  /* Timeout is set to 10S */
-  if(HAL_I2C_Slave_Transmit(&I2cHandle, (uint8_t*)aTxBuffer, TXBUFFERSIZE, 10000)!= HAL_OK)
-  {
-    /* Transfer error in transmission process */
-    Error_Handler();
-  }
-
-  /* Turn LED2 off: Transfer in transmission process is correct */
-  BSP_LED_Off(LED2);
-  
-#endif /* MASTER_BOARD */
-
-  /*##-4- Compare the sent and received buffers ##############################*/
-  if(Buffercmp((uint8_t*)aTxBuffer,(uint8_t*)aRxBuffer,RXBUFFERSIZE))
-  {
-    /* Processing Error */
-    Error_Handler();
-  }
- 
   /* Infinite loop */
   while (1)
   {
@@ -273,59 +129,40 @@ void SystemClock_Config(void)
 }
 
 /**
-  * @brief  I2C error callbacks.
-  * @param  I2cHandle: I2C handle
-  * @note   This example shows a simple way to report transfer error, and you can
-  *         add your own implementation.
-  * @retval None
-  */
-void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *I2cHandle)
-{
-  /** Error_Handler() function is called when error occurs.
-    * 1- When Slave don't acknowledge it's address, Master restarts communication.
-    * 2- When Master don't acknowledge the last data transferred, Slave don't care in this example.
-    */
-  if (HAL_I2C_GetError(I2cHandle) != HAL_I2C_ERROR_AF)
-  {
-    Error_Handler();
-  }
-}
-
-/**
-  * @brief  This function is executed in case of error occurrence.
+  * @brief  Configures EXTI lines 10 to 15 (connected to PC.13 pin) in interrupt mode
   * @param  None
   * @retval None
   */
-static void Error_Handler(void)
+static void EXTI15_10_IRQHandler_Config(void)
 {
-  /* LED2 is slowly blinking (1 sec. period) */
-  while(1)
-  {    
-    BSP_LED_Toggle(LED2); 
-    HAL_Delay(1000);
-  } 
+  GPIO_InitTypeDef   GPIO_InitStructure;
+
+  /* Enable GPIOC clock */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+
+  /* Configure PC.13 pin as input floating */
+  GPIO_InitStructure.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStructure.Pull = GPIO_NOPULL;
+  GPIO_InitStructure.Pin = GPIO_PIN_13;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+  /* Enable and set EXTI lines 10 to 15 Interrupt to the lowest priority */
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 2, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 }
 
 /**
-  * @brief  Compares two buffers.
-  * @param  pBuffer1, pBuffer2: buffers to be compared.
-  * @param  BufferLength: buffer's length
-  * @retval 0  : pBuffer1 identical to pBuffer2
-  *         >0 : pBuffer1 differs from pBuffer2
+  * @brief EXTI line detection callbacks
+  * @param GPIO_Pin: Specifies the pins connected EXTI line
+  * @retval None
   */
-static uint16_t Buffercmp(uint8_t* pBuffer1, uint8_t* pBuffer2, uint16_t BufferLength)
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-  while (BufferLength--)
+  if (GPIO_Pin == GPIO_PIN_13)
   {
-    if ((*pBuffer1) != *pBuffer2)
-    {
-      return BufferLength;
-    }
-    pBuffer1++;
-    pBuffer2++;
+    /* Toggle LED2 */
+    BSP_LED_Toggle(LED2);
   }
-
-  return 0;
 }
 
 #ifdef  USE_FULL_ASSERT
@@ -348,7 +185,6 @@ void assert_failed(uint8_t *file, uint32_t line)
   }
 }
 #endif
-
 
 /**
   * @}
