@@ -7,7 +7,7 @@ NAME = test
 BUILD_PATH = ./build
 
 # STM32Cube L4 path
-STM32L4_CUBE_PATH = /home/clem/Bureau/IMERIR-2019/STM32Cube_FW_L4_V1.14.0
+STM32L4_CUBE_PATH = /home/Alex/Bureau/IMERIR-2019/STM32Cube_FW_L4_V1.14.0
 
 SOURCE = main.c
 
