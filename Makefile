@@ -105,7 +105,7 @@ LINKER_OPTION += $(CPU)
 LINKER_OPTION += -Wl,--start-group -lc -lm -Wl,--end-group 
 
 
-TOOLS_PATH=/home/clem/Bureau/GCC_STM32/gcc-arm-none-eabi-9-2019-q4-major/bin/
+TOOLS_PATH=/home/Alex/Bureau/GCC_STM32/gcc-arm-none-eabi-9-2019-q4-major/bin/
 
 EXE=$(BUILD_PATH)/$(NAME).hex
 EXE_MAIN=$(BUILD_PATH)/$(NAME).elf
